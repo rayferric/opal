@@ -13,6 +13,7 @@
 \usepackage{mathdots}
 \usepackage{algpseudocode}
 \usepackage{hyperref}
+\usepackage[nottoc,numbib]{tocbibind}
 
 \title{
     OPAL \\
@@ -81,7 +82,7 @@
 
     \subsection{Computational Complexity}
 
-    To analyze the computational complexity of insertion sort, one must count the number of times that both the outer for-loop and the inner while-loop are iterated. The number of outer-loop iterations is equal to the number of elements in the array minus one. The number of inner-loop iterations ranges from one to the number of elements in the array minus one, but it additionally depends on the order of the elements in the array. However, the average number of inner-loop iterations is approximately equal to the number of elements in the array divided by two. This results in the following formulae:
+    To analyze the computational complexity of insertion sort, one must count the number of times that both the outer for-loop and the inner while-loop are iterated. The number of outer-loop iterations is equal to the number of elements in the array minus one. The number of inner-loop iterations ranges from one to the number of elements in the array minus one, but it also depends on the order of the elements in the array. However, the average number of inner-loop iterations is approximately equal to the number of elements in the array divided by two. This results in the following formulae:
 
     \begin{equation*}
         \begin{aligned}
@@ -116,6 +117,8 @@
     \begin{table}[h]
         \centering
         \begin{tabular}{|c|c|c|c|}
+            \hline
+            \multicolumn{3}{|c|}{Computational Complexity} \\
             \hline
             \textbf{Best} & \textbf{Worst} & \textbf{Average} \\
             \hline
