@@ -10,7 +10,7 @@ The algorithms are described in detail in the [PDF document](./build/opal.pdf).
 
 Demonstration videos for each algorithm are available in the [`build/manim`](./build/manim) directory.
 
-Additionally, C++ implementation of every algorithm can be found under [`./include/opal`](./include/opal).
+Additionally, C++ implementation of every algorithm is located under [`./include/opal`](./include/opal).
 
 # Building Demo Executables
 
