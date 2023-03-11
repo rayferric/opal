@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+import os, shutil
+
+print("\nConfiguring CMake...")
+cmd = "cmake -B ./.cache/cmake -S . -DCMAKE_BUILD_TYPE=Release"
+print(f"$ {cmd}")
+os.system(cmd)
+
+print("\nBuilding C++...")
+cmd = "cmake --build ./.cache/cmake --config Release"
+print(f"$ {cmd}")
+os.system(cmd)
+
+print(f"\nPackaging C++ binaries...")
+if os.path.exists("./build/bin"):
+    shutil.rmtree("./build/bin")
+os.makedirs("./build", exist_ok=True)
+shutil.copytree("./.cache/cmake/bin", "./build/bin")
