@@ -1,3 +1,5 @@
+#include <iterator> // std::next, std::prev
+
 namespace opal {
 
 template <
