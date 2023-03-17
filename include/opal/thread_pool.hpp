@@ -65,7 +65,7 @@ public:
 private:
 	struct job_item {
 		std::function<void(uint32_t)> job;
-		std::shared_ptr<future>       future;
+		std::shared_ptr<opal::future> future;
 	};
 
 	std::vector<std::thread>                      threads;
