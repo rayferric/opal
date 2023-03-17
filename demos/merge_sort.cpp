@@ -14,7 +14,7 @@ void print_vector(const std::vector<T> &v) {
 	std::cout << std::endl;
 }
 
-constexpr size_t n  = 1000000;
+constexpr size_t n = 1000000;
 
 template <typename Sort>
 void benchmark_sort(Sort sort, std::vector<int32_t> numbers) {

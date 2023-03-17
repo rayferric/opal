@@ -60,7 +60,7 @@ class Number:
                 ),
             ),
         ] + self.anim_set_value_opacity(opacity)
-    
+
     def anim_set_value_opacity(self, opacity):
         text_opacity = 1
         return [
@@ -90,7 +90,7 @@ class Number:
 
     def get_value(self):
         return self.value
-    
+
     def set_color(self, color):
         self.circle.set_color(color)
 
@@ -115,7 +115,7 @@ class Array:
 
     def anim_create(self):
         return sum([number.anim_create() for number in self.numbers], [])
-    
+
     def anim_fade_in(self):
         return sum([number.anim_fade_in() for number in self.numbers], [])
 
@@ -123,11 +123,18 @@ class Array:
         return sum([number.get_center() for number in self.numbers]) / len(
             self.numbers
         )
-    
+
     def anim_fork_branch(self, scene, is_right):
         split_index = len(self.numbers) // 2
 
-        numbers = [n.copy() for n in (self.numbers[split_index:] if is_right else self.numbers[:split_index])]
+        numbers = [
+            n.copy()
+            for n in (
+                self.numbers[split_index:]
+                if is_right
+                else self.numbers[:split_index]
+            )
+        ]
         for number in numbers:
             number.set_color(RED if is_right else GREEN)
 
@@ -155,10 +162,12 @@ class Array:
             anims += [scene.camera.frame.animate.shift(SHIFT_DOWN * 0.5)]
 
         return anims
-    
+
     def anim_clear_values(self):
-        return sum([number.anim_set_value_opacity(0) for number in self.numbers], [])
-    
+        return sum(
+            [number.anim_set_value_opacity(0) for number in self.numbers], []
+        )
+
     def anim_merge_branch(self, scene, i_from, i_to, is_right):
         anims = []
 
@@ -166,15 +175,20 @@ class Array:
             anims += [scene.camera.frame.animate.shift(SHIFT_DOWN * -0.5)]
 
         if is_right:
-            anims += self.right_branch.numbers[i_from].anim_morph_to(self.numbers[i_to])
+            anims += self.right_branch.numbers[i_from].anim_morph_to(
+                self.numbers[i_to]
+            )
         else:
-            anims += self.left_branch.numbers[i_from].anim_morph_to(self.numbers[i_to])
+            anims += self.left_branch.numbers[i_from].anim_morph_to(
+                self.numbers[i_to]
+            )
 
         return anims
 
+
 def merge(scene, array, raw_array, l, m, u):
     scene.play(*array.anim_clear_values())
-    
+
     buffer = []
 
     i = l
@@ -182,14 +196,18 @@ def merge(scene, array, raw_array, l, m, u):
 
     while i < m and j < u:
         if raw_array[i] <= raw_array[j]:
-            scene.play(*array.anim_merge_branch(scene, i - l, len(buffer), False))
+            scene.play(
+                *array.anim_merge_branch(scene, i - l, len(buffer), False)
+            )
             buffer.append(raw_array[i])
             i += 1
         else:
-            scene.play(*array.anim_merge_branch(scene, j - m, len(buffer), True))
+            scene.play(
+                *array.anim_merge_branch(scene, j - m, len(buffer), True)
+            )
             buffer.append(raw_array[j])
             j += 1
-    
+
     while i < m:
         scene.play(*array.anim_merge_branch(scene, i - l, len(buffer), False))
         buffer.append(raw_array[i])
@@ -203,6 +221,7 @@ def merge(scene, array, raw_array, l, m, u):
     for i in range(l, u):
         raw_array[i] = buffer[i - l]
 
+
 def merge_sort(scene, array, raw_array, l, u):
     if u - l > 1:
         m = (l + u) // 2
@@ -214,6 +233,7 @@ def merge_sort(scene, array, raw_array, l, u):
         merge_sort(scene, array.right_branch, raw_array, m, u)
 
         merge(scene, array, raw_array, l, m, u)
+
 
 class InsertionSort(MovingCameraScene):
     def construct(self):
