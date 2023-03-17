@@ -15,7 +15,6 @@ void print_vector(const std::vector<T> &v) {
 }
 
 constexpr size_t n  = 1000000;
-constexpr size_t n2 = 100000000;
 
 template <typename Sort>
 void benchmark_sort(Sort sort, std::vector<int32_t> numbers) {
@@ -53,55 +52,6 @@ int main() {
 	std::cout << "Generating " << n << " random numbers..." << std::endl;
 
 	for (int32_t i = 0; i < n; ++i) {
-		numbers.push_back(dist(rng));
-	}
-
-	std::cout << std::endl
-	          << "Benchmarking opal::insertion_sort..." << std::endl;
-
-	benchmark_sort(
-	    [](auto begin, auto end) {
-		    opal::insertion_sort(begin, end);
-	    },
-	    numbers
-	);
-
-	std::cout << std::endl
-	          << "Benchmarking single-threaded opal::merge_sort..."
-	          << std::endl;
-
-	benchmark_sort(
-	    [](auto begin, auto end) {
-		    opal::merge_sort(begin, end);
-	    },
-	    numbers
-	);
-
-	std::cout << std::endl << "Benchmarking std::sort..." << std::endl;
-
-	benchmark_sort(
-	    [](auto begin, auto end) {
-		    std::sort(begin, end);
-	    },
-	    numbers
-	);
-
-	std::cout << std::endl
-	          << "Benchmarking parallel opal::merge_sort..." << std::endl;
-
-	benchmark_sort(
-	    [](auto begin, auto end) {
-		    opal::merge_sort(opal::thread_pool::common_pool(), begin, end);
-	    },
-	    numbers
-	);
-
-	numbers.clear();
-
-	std::cout << std::endl
-	          << "Generating " << n2 << " random numbers..." << std::endl;
-
-	for (int32_t i = 0; i < n2; ++i) {
 		numbers.push_back(dist(rng));
 	}
 

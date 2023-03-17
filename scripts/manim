@@ -19,10 +19,9 @@ for src_file in glob.glob("./manim/src/*.py"):
     os.system(cmd)
 
     # Find the audio and the rendered video.
-    sfx_files = glob.glob(f"./manim/sfx/{out_name}.[!txt]*")
     out_files = glob.glob(f"./.cache/manim/videos/*/*/{out_name}.mp4")
 
-    if len(sfx_files) != 1 or len(out_files) != 1:
+    if len(out_files) != 1:
         continue
 
     # Determine the duration of the video.
@@ -30,8 +29,8 @@ for src_file in glob.glob("./manim/src/*.py"):
     print(f"$ {cmd}")
     duration = float(os.popen(cmd).read())
 
-    # Mux the audio loop with the video.
-    cmd = f"ffmpeg -y -i {out_files[0]} -i {sfx_files[0]} -filter_complex '[1]afade=t=out:st={duration - 3}:d=3,atrim=0:{duration}' {out_files[0]}.mp4"
+    # Mux background audio with the video.
+    cmd = f"ffmpeg -y -i {out_files[0]} -i ./manim/cute-bass.mp3 -filter_complex '[1]afade=t=out:st={duration - 3}:d=3,atrim=0:{duration}' {out_files[0]}.mp4"
     print(f"$ {cmd}")
     os.system(cmd)
 

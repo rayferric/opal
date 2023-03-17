@@ -117,14 +117,15 @@ void merge_sort<Iterator, Comparator>::branch(Iterator begin, Iterator end) {
 		branch(begin, middle);
 		branch(middle, end);
 	} else {
+		// Offload the sorting of each of the two branches to a separate thread.
 		auto lfuture = pool->submit([&](uint32_t) {
 			branch(begin, middle);
 		});
-
 		auto rfuture = pool->submit([&](uint32_t) {
 			branch(middle, end);
 		});
 
+		// Wait for the threads to finish.
 		lfuture->wait();
 		rfuture->wait();
 	}

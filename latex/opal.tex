@@ -50,7 +50,7 @@
 
     \begin{itemize}
         \item It is in-place: only a constant amount of additional memory is needed.
-        \item It is stable: equal elements will never be reordered
+        \item It is stable: equal elements will never be reordered.
         \item It is online: it can sort a list as it receives it.
     \end{itemize}
 
@@ -62,22 +62,22 @@
 
     \begin{algorithmic}[1]
         \State $A \gets ...$
-        \For{$i = 2,3,...,len(A)$} \label{step:step}
-            \State $a \gets A[i]$ \label{step:focus}
+        \For{$i = 2,3,...,len(A)$} \label{insert:step}
+            \State $a \gets A[i]$ \label{insert:focus}
             \State $j \gets i - 1$
-            \While{$j \neq 0$ \textbf{and} $a < A[j]$} \label{step:shift}
+            \While{$j \neq 0$ \textbf{and} $a < A[j]$} \label{insert:shift}
                 \State $A[j + 1] \gets A[j]$
                 \State $j \gets j - 1$
             \EndWhile
-            \State $A[j + 1] \gets a$ \label{step:insert}
+            \State $A[j + 1] \gets a$ \label{insert:insert}
         \EndFor
     \end{algorithmic}
 
     \begin{enumerate}
-        \item The procedure starts by focusing each element starting from the second one up to the last one. (line \ref{step:step})
-        \item The currently focused element is saved to a separate variable as it might be overwritten in subsequent steps. (line \ref{step:focus})
-        \item Previous elements are shifted one position to the right until the right spot for the focused value is found. (line \ref{step:shift})
-        \item Finally, the focused value is inserted in the old place of the most recently shifted element. If no elements were shifted, the focused value will be inserted in the same place where it has been. (line \ref{step:insert})
+        \item The procedure starts by focusing each element starting from the second one up to the last one. (line \ref{insert:step})
+        \item The currently focused element is saved to a separate variable as it might be overwritten in subsequent steps. (line \ref{insert:focus})
+        \item Previous elements are shifted one position to the right until the right spot for the focused value is found. (line \ref{insert:shift})
+        \item Finally, the focused value is inserted in the old place of the most recently shifted element. If no elements were shifted, the focused value will be inserted in the same place where it has been. (line \ref{insert:insert})
     \end{enumerate}
 
     \subsection{Computational Complexity}
@@ -130,11 +130,126 @@
     It is worth noting that such low computational complexity in the best case scenario for this algorithm makes it an excellent choice to use with nearly sorted arrays as the performance hit is negligible.
 
     \clearpage
+    \section{Merge Sort}
+
+    \subsection{Description}
+
+    Merge sort is a more advanced sorting algorithm that takes advantage of the famous divide-and-conquer strategy. Because of this, merge sort is much more efficient than insertion sort and other simple algorithms. Merge sort provides several advantages:
+
+    \begin{itemize}
+        \item It is stable: equal elements will never be reordered.
+        \item It is parallelizable: various parts of the algorithm can be run concurrently without data races or loss of stability.
+        \item It is optimal: the average time complexity is $O(n \log n)$.
+    \end{itemize}
+
+    However, merge sort is not without its drawbacks. It is not in-place as it requires additional memory for merging. It is also not online and is way slower with small arrays than most $O(n^2)$ algorithms.
+
+    \subsection{Procedure}
+
+    Common implementation of the algorithm:
+
+    \begin{algorithmic}[1]
+        \State $A \gets ...$
+        \State $A \gets merge$-$sort(A, 1, len(A) + 1)$
+
+        \Function{merge-sort}{$A, l, u$}
+            \If{$u - l > 1$} \label{merge:check}
+                \State $m \gets \lfloor (l + u) \div 2 \rfloor$
+                
+                \State $merge$-$sort(A, l, m)$ \label{merge:left}
+                \State $merge$-$sort(A, m, u)$ \label{merge:right}
+
+                \State $merge(A, l, m, u)$ \label{merge:merge}
+            \EndIf
+        \EndFunction
+    \end{algorithmic}
+
+    \begin{enumerate}
+        \item The algorithm begins by checking whether the array is long enough and quits instantly if the array is already sorted (i.e. contains a single element). In this implementation $u$ is not included in the sorting range. (line \ref{merge:check})
+        \item If the array needs to be sorted, it is split into two sub-arrays of roughly the same length, each one of which is sorted recursively using merge sort itself. (lines \ref{merge:left} and \ref{merge:right})
+        \item Finally, the two sorted sub-arrays are merged into one. The merge procedure is the most important part of the algorithm as it is the major factor in its time complexity. Amazingly, merge can be carried out in $O(n)$ time, which is the reason of merge sort's great performance. (line \ref{merge:merge})
+    \end{enumerate}
+
+    \begin{algorithmic}[1]
+        \Function{merge}{$A, l, m, u$}
+            \State $B \gets empty$ $array$ \label{merge:buffer}
+
+            \State $i \gets l$ \label{merge:i}
+            \State $j \gets m$ \label{merge:j}
+
+            \While{$i < m \And j < u$} \label{merge:join}
+                \If{$A[i] \leq A[j]$}
+                    \State $B \gets B + A[i]$
+                    \State $i \gets i + 1$
+                \Else
+                    \State $B \gets B + A[j]$
+                    \State $j \gets j + 1$
+                \EndIf
+            \EndWhile
+
+            \State $B \gets B + A[i \dots m)$ \label{merge:complete-left}
+            \State $B \gets B + A[j \dots u)$ \label{merge:complete-right}
+
+            \State $A[l \dots u) \gets B$ \label{merge:replicate}
+        \EndFunction
+    \end{algorithmic}
+
+    \begin{enumerate}
+        \item The merge procedure begins by allocating an auxiliary buffer that will store the result of merging.
+        \item Next, two iterators, $i$ and $j$, are initialized. They keep track of the current progress in two of the sub-arrays. (lines \ref{merge:i} and \ref{merge:j})
+        \item The two sub-arrays are then merged into one by comparing the elements at indices $i$ and $j$. The smaller element is added to the buffer and the index of the sub-array it came from is incremented. (line \ref{merge:join})
+        \item If one of the sub-arrays is exhausted, the remaining elements of the other sub-array are added to the buffer. (lines \ref{merge:complete-left} and \ref{merge:complete-right})
+        \item Finally, the buffer is copied back to the right position in the original array. (line \ref{merge:replicate})
+    \end{enumerate}
+
+    \subsection{Computational Complexity}
+
+    The computational complexity of the merge sort is a more complicated matter. The algorithm is based on the divide-and-conquer strategy, which means that it utilizes recursion. On each level of recursion, the problem of size $n$ is divided into two sub-problems of roughly the same size $\frac{n}{2}$. Then, the results of the two sub-problems are joined together in $O(n)$ time. This results in the following recurrence relation:
+    
+    \begin{equation*}
+        T(n) = 2T(n/2) + O(n)
+    \end{equation*}
+
+    The master theorem can be utilized in order to calculate the complexity of this algorithm:
+
+    \begin{equation*}
+        \begin{aligned}
+            a, b &= 2 = const \\
+            \log_b a &= \log_2 2 = 1 \\
+            f(n) &= n = n^1 = n^{\log_b a} \\
+            \Rightarrow T(n) &= \Theta(n \log n)
+        \end{aligned}
+    \end{equation*}
+
+    It follows that the worst, the best, and the average case complexity of merge sort all are $\Theta(n \log n)$ which is the best possible performance for any comparison-based sorting algorithm.
+
+    \subsection{Optimizations}
+
+    In order to push the performance of merge sort even further, two concurrent execution threads can be spawned at each level of recursion. This is possible because both sub-arrays do not overlap at all which in turn eliminates data dependencies. The two threads can then sort their respective sub-arrays independently and let the supervising thread merge the results.
+
+    For optimal performance the total number of bottom-level threads should be a little higher than the number of CPU cores as possible, but not too high as scheduling too many concurrent jobs might cause a significant overhead.
+
+    Thread count limiting can be implemented by checking whether the sub-array is long enough to be put on two extra threads. If it is not, the sub-array is sorted entirely on the current thread. The array length threshold below which the sub-array is not split can be calculated before the algorithm is executed:
+
+    \begin{equation*}
+        \begin{aligned}
+            N_{jobs} &= 2^{\lceil \log_2 N_{threads} \rceil} \\
+            n_{threshold} &= \max(n \div N_{jobs}, 1024)
+        \end{aligned}
+    \end{equation*}
+
+    Ideally, the worker threads should be stored in a thread pool and reused for subsequent merge sort calls. This way, the overhead of creating and destroying threads is eliminated.
+
+    Temporary merge buffers can also be pooled, but for most uses it is enough to just allocate a single buffer of size $n$ at the beginning of the algorithm and reuse it for all merge calls. In this scenario each thread offsets its working area in the buffer to $[l, u)$ which guarantees that each merge operation will get its own isolated piece of the buffer.
+
+    Finally, other $O(n^2)$ sorting algorithms can be used as fallback for even smaller sub-arrays as they typically are much faster at solving smaller sorting problems. For this purpose, OPAL makes use of insertion sort with a threshold of $n = 64$ which decimates the running time of the algorithm by 20\% on average.
+
+    \clearpage
     \begin{thebibliography}{1}
         \bibitem{cormen}
-        Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein.
-        \newblock \emph{Introduction to Algorithms}.
-        \newblock MIT Press, 2001.
+        Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein;
+        \newblock \emph{Introduction to Algorithms};
+        \newblock MIT Press, 2001
     \end{thebibliography}
 
 \end{document}
