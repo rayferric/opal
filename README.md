@@ -17,6 +17,7 @@ Additionally, C++ implementation of every algorithm is located under [`./include
 The demonstration programs are not distributed in precompiled form as this would pose a series of problems, including the requirement of extensive cross-platform support and possible malware issues.
 
 In order to build the demonstration executables, CMake 3.20 or newer is required along with a compiler capable of processing C++ 20 source code.
+The code was tested for compilation errors or warning against the latest versions of Clang and GCC on Linux operating system.
 
 To start the build process, issue the following commands:
 
