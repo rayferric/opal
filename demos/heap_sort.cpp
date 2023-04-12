@@ -14,18 +14,50 @@ void print_vector(const std::vector<T> &v) {
 
 template <typename T>
 void print_heap(const std::vector<T> &v) {
-	for (std::size_t i = 0; i < v.size(); i++) {
-		std::size_t level       = std::log2(i + 1);
-		std::size_t level_begin = (static_cast<std::size_t>(1) << level) - 1;
+	// for (std::size_t i = 0; i < v.size(); i++) {
+	// 	std::size_t level       = std::log2(i + 1);
+	// 	std::size_t level_begin = (static_cast<std::size_t>(1) << level) - 1;
 
-		if (i == level_begin && i != 0) {
-			std::cout << std::endl;
-		}
+	// 	if (i == level_begin && i != 0) {
+	// 		std::cout << std::endl;
+	// 	}
 
-		std::cout << v[i] << " ";
+	// 	std::cout << v[i] << " ";
+	// }
+
+	// std::cout << std::endl;
+
+	// Use opal::_internal::bst_node and opal::_internal::stringify_bst
+
+	// Create a vector of nodes.
+	std::vector<opal::_internal::bst_node<T> *> nodes;
+	nodes.reserve(v.size());
+
+	for (const auto &e : v) {
+		nodes.emplace_back(new opal::_internal::bst_node<T>{T{e}, nullptr});
 	}
 
-	std::cout << std::endl;
+	std::unique_ptr<opal::_internal::bst_node<T>> root{nodes[0]};
+
+	// Connect the nodes.
+	for (std::size_t i = 0; i < v.size(); i++) {
+		std::size_t left  = 2 * i + 1;
+		std::size_t right = 2 * i + 2;
+
+		if (left < v.size()) {
+			nodes[i]->left.reset(nodes[left]);
+		}
+
+		if (right < v.size()) {
+			nodes[i]->right.reset(nodes[right]);
+		}
+	}
+
+	// Print the tree.
+	std::vector<std::string> lines = opal::_internal::stringify_bst(root.get());
+	for (const auto &line : lines) {
+		std::cout << line << std::endl;
+	}
 }
 
 int main() {
@@ -35,13 +67,21 @@ int main() {
 	print_vector(numbers);
 	std::cout << std::endl;
 
+	std::cout << "Heap before sorting:" << std::endl;
+	print_heap(numbers);
+	std::cout << std::endl;
+
+	std::vector<std::int32_t> last_heap_state = numbers;
 	opal::heap_sort(
 	    numbers.begin(),
 	    numbers.end(),
 	    [&](const auto &a, const auto &b) {
-		    std::cout << "Heap during comparison of " << a << " and " << b
+		    if (last_heap_state != numbers) {
+				std::cout << "Heap during comparison of " << a << " and " << b
 		              << ":" << std::endl;
-		    print_heap(numbers);
+			    print_heap(numbers);
+			    last_heap_state = numbers;
+		    }
 		    return a < b;
 	    }
 	);
