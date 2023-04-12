@@ -12,6 +12,22 @@ void print_vector(const std::vector<T> &v) {
 	std::cout << std::endl;
 }
 
+template <typename T>
+void print_heap(const std::vector<T> &v) {
+	for (std::size_t i = 0; i < v.size(); i++) {
+		std::size_t level       = std::log2(i + 1);
+		std::size_t level_begin = (static_cast<std::size_t>(1) << level) - 1;
+
+		if (i == level_begin && i != 0) {
+			std::cout << std::endl;
+		}
+
+		std::cout << v[i] << " ";
+	}
+
+	std::cout << std::endl;
+}
+
 int main() {
 	std::vector<std::int32_t> numbers{7, 11, -1, -2, 9, 11, 0, -1};
 
@@ -19,13 +35,13 @@ int main() {
 	print_vector(numbers);
 	std::cout << std::endl;
 
-	opal::insertion_sort(
+	opal::heap_sort(
 	    numbers.begin(),
 	    numbers.end(),
 	    [&](const auto &a, const auto &b) {
-		    std::cout << "Array during comparison of " << a << " and " << b
+		    std::cout << "Heap during comparison of " << a << " and " << b
 		              << ":" << std::endl;
-		    print_vector(numbers);
+		    print_heap(numbers);
 		    return a < b;
 	    }
 	);
@@ -34,7 +50,7 @@ int main() {
 	std::cout << "Array after sorting:" << std::endl;
 	print_vector(numbers);
 
-	opal::insertion_sort(numbers.begin(), numbers.end(), std::greater{});
+	opal::heap_sort(numbers.begin(), numbers.end(), std::greater{});
 
 	std::cout << std::endl;
 	std::cout << "Array sorted in reverse order:" << std::endl;
@@ -47,7 +63,7 @@ int main() {
 	std::cout << "String array before sorting:" << std::endl;
 	print_vector(strings);
 
-	opal::insertion_sort(strings.begin(), strings.end());
+	opal::heap_sort(strings.begin(), strings.end());
 
 	std::cout << std::endl;
 	std::cout << "String array after sorting:" << std::endl;

@@ -6,7 +6,9 @@ namespace opal {
 template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator>
-void insertion_sort(Iterator begin, Iterator end, Comparator comparator) {
+void insertion_sort(
+    Iterator begin, Iterator end, const Comparator &comparator
+) {
 	// Focus each element starting from the second one up to the last one.
 	for (Iterator focus = std::next(begin); focus != end; focus++) {
 		// Remember the focused element before shifting.

@@ -7,7 +7,7 @@
 namespace opal {
 
 ///
-/// @brief Sorts the elements in the range [begin, end) using the insertion sort
+/// @brief Sorts the elements in the range [begin, end) using the heap sort
 /// algorithm.
 ///
 /// @tparam Iterator the type of iterator
@@ -21,10 +21,10 @@ namespace opal {
 template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator = decltype(std::less{})>
-void insertion_sort(
+void heap_sort(
     Iterator begin, Iterator end, const Comparator &comparator = Comparator{}
 );
 
 } // namespace opal
 
-#include "insertion_sort.inl"
+#include "heap_sort.inl"

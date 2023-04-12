@@ -5,7 +5,7 @@ thread_pool &thread_pool::common_pool() {
 	return pool;
 }
 
-thread_pool::thread_pool(uint32_t thread_count) {
+thread_pool::thread_pool(std::uint32_t thread_count) {
 	// If the thread count is zero, use the number of system threads.
 	if (thread_count == 0) {
 		thread_count = std::thread::hardware_concurrency();
@@ -20,7 +20,7 @@ thread_pool::thread_pool(uint32_t thread_count) {
 	threads.reserve(thread_count);
 
 	// Initialize the threads.
-	for (uint32_t i = 0; i < thread_count; i++) {
+	for (std::uint32_t i = 0; i < thread_count; i++) {
 		// Create a thread that will execute the process function.
 		threads.emplace_back(&thread_pool::process, this, i, nullptr);
 
@@ -40,7 +40,8 @@ thread_pool::~thread_pool() {
 	}
 }
 
-std::shared_ptr<future> thread_pool::submit(std::function<void(uint32_t)> job) {
+std::shared_ptr<future>
+thread_pool::submit(std::function<void(std::uint32_t)> job) {
 	// Create a future that will be used to wait for the job to finish.
 	std::shared_ptr<opal::future> future{new opal::future(*this)};
 
@@ -61,18 +62,18 @@ std::shared_ptr<future> thread_pool::submit(std::function<void(uint32_t)> job) {
 	return future;
 }
 
-uint32_t thread_pool::thread_count() const {
+std::uint32_t thread_pool::thread_count() const {
 	return threads.size();
 }
 
 void thread_pool::process(
-    uint32_t thread_index, const future *quit_when_ready
+    std::uint32_t thread_index, const future *quit_when_ready
 ) {
 	// This is the function that worker threads will execute.
 
 	// job that is going to be executed; Declared outside the loop so that it
 	// doesn't get reallocated every time.
-	std::function<void(uint32_t thread_index)> job;
+	std::function<void(std::uint32_t thread_index)> job;
 
 	// The future that will be used to notify threads waiting for the job to
 	// finish.

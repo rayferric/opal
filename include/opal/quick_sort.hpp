@@ -3,12 +3,11 @@
 #include <functional> // std::less
 
 #include "concepts.hpp"
-#include "thread_pool.hpp"
 
 namespace opal {
 
 ///
-/// @brief Sorts the elements in the range [begin, end) using the merge sort
+/// @brief Sorts the elements in the range [begin, end) using the quick sort
 /// algorithm.
 ///
 /// @tparam Iterator the type of iterator
@@ -22,7 +21,7 @@ namespace opal {
 template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator = decltype(std::less{})>
-void merge_sort(
+void quick_sort(
     Iterator begin, Iterator end, const Comparator &comparator = Comparator{}
 );
 
@@ -42,7 +41,7 @@ void merge_sort(
 template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator = decltype(std::less{})>
-void merge_sort(
+void quick_sort(
     thread_pool      &pool,
     Iterator          begin,
     Iterator          end,
@@ -51,4 +50,4 @@ void merge_sort(
 
 } // namespace opal
 
-#include "merge_sort.inl"
+#include "quick_sort.inl"

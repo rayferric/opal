@@ -56,12 +56,12 @@ int main() {
 	}
 
 	std::cout << std::endl
-	          << "Benchmarking single-threaded opal::merge_sort..."
+	          << "Benchmarking single-threaded opal::quick_sort..."
 	          << std::endl;
 
 	benchmark_sort(
 	    [](auto begin, auto end) {
-		    opal::merge_sort(begin, end);
+		    opal::quick_sort(begin, end);
 	    },
 	    numbers
 	);
@@ -76,11 +76,11 @@ int main() {
 	);
 
 	std::cout << std::endl
-	          << "Benchmarking parallel opal::merge_sort..." << std::endl;
+	          << "Benchmarking parallel opal::quick_sort..." << std::endl;
 
 	benchmark_sort(
 	    [](auto begin, auto end) {
-		    opal::merge_sort(opal::thread_pool::common_pool(), begin, end);
+		    opal::quick_sort(opal::thread_pool::common_pool(), begin, end);
 	    },
 	    numbers
 	);

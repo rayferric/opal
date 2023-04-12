@@ -1,9 +1,11 @@
 #include <algorithm> // std::move(..., ..., ...)
 #include <cmath>
-#include <cstdlib>  // size_t
-#include <iterator> // std::distance, std::back_inserter
+#include <cstdlib>  // std::size_t
+#include <iterator> // std::distance
 #include <utility>  // std::move(...)
 #include <vector>   // std::vector
+
+#include "insertion_sort.hpp"
 
 namespace opal::_internal {
 
@@ -21,14 +23,13 @@ public:
 
 private:
 	// the maximum size of a range that is to be sorted using the insertion
-	// approach; 64 is the sweet spot
-	static constexpr size_t insertion_sort_threshold = 64;
+	// approach; 64 is the sweet spot.
+	static constexpr std::size_t insertion_sort_threshold = 64;
 
 	// the maximum size of a range that is to be always sorted using a single
 	// thread; It's needed because for smaller branches it's better to use a
-	// single job. This parameter only affects sorting of very short arrays at
-	// couple thousand elements.
-	static constexpr size_t min_single_threaded_threshold = 1024;
+	// single job.
+	static constexpr std::size_t min_single_threaded_threshold = 1024;
 
 	// The type of elements in the range.
 	using value_type = typename Iterator::value_type;
@@ -38,7 +39,7 @@ private:
 
 	// the maximum size of a range that is to be sorted using a single thread
 	// Tuned dynamically to the size of the array and the number of threads.
-	size_t single_threaded_threshold;
+	std::size_t single_threaded_threshold;
 
 	// comparator predicate
 	const Comparator &comparator;
@@ -73,7 +74,7 @@ merge_sort<Iterator, Comparator>::merge_sort(
 	if (pool) {
 		// number of same-level branches that is slightly above the number of
 		// threads
-		uint32_t number_of_jobs =
+		std::uint32_t number_of_jobs =
 		    std::exp2(std::ceil(std::log2(pool->thread_count())));
 
 		// Split the range into the given number of jobs.
@@ -95,7 +96,7 @@ merge_sort<Iterator, Comparator>::merge_sort(
 
 template <iterator Iterator, comparator<Iterator> Comparator>
 void merge_sort<Iterator, Comparator>::branch(Iterator begin, Iterator end) {
-	size_t size = std::distance(begin, end);
+	std::size_t size = std::distance(begin, end);
 
 	// Abort if the range is empty or contains only one element.
 	if (size <= 1) {
@@ -112,16 +113,16 @@ void merge_sort<Iterator, Comparator>::branch(Iterator begin, Iterator end) {
 	Iterator middle = begin + (size / 2);
 
 	// Use single-threaded merge sort for shorter ranges.
-	if (pool == nullptr || size <= single_threaded_threshold) {
+	if (!pool || size <= single_threaded_threshold) {
 		// Sort each of the two half-ranges.
 		branch(begin, middle);
 		branch(middle, end);
 	} else {
 		// Offload the sorting of each of the two branches to a separate thread.
-		auto lfuture = pool->submit([&](uint32_t) {
+		auto lfuture = pool->submit([&](std::uint32_t) {
 			branch(begin, middle);
 		});
-		auto rfuture = pool->submit([&](uint32_t) {
+		auto rfuture = pool->submit([&](std::uint32_t) {
 			branch(middle, end);
 		});
 
@@ -193,7 +194,7 @@ namespace opal {
 template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator>
-void merge_sort(Iterator begin, Iterator end, Comparator comparator) {
+void merge_sort(Iterator begin, Iterator end, const Comparator &comparator) {
 	_internal::merge_sort<Iterator, Comparator>{
 	    nullptr, begin, end, comparator};
 }
@@ -202,7 +203,10 @@ template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator>
 void merge_sort(
-    thread_pool &pool, Iterator begin, Iterator end, Comparator comparator
+    thread_pool      &pool,
+    Iterator          begin,
+    Iterator          end,
+    const Comparator &comparator
 ) {
 	_internal::merge_sort<Iterator, Comparator>{&pool, begin, end, comparator};
 }

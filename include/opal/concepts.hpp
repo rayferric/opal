@@ -33,4 +33,16 @@ concept comparator = requires(T t, Iterator a, Iterator b) {
 };
 // clang-format on
 
+///
+/// @brief This concept requires an indexer function, that takes in a value from
+/// Iterator and returns a std::size_t index that dictates the order of
+/// elements.
+///
+// clang-format off
+template <typename T, typename Iterator>
+concept indexer = requires(T t, Iterator a) {
+	{ t(*a) } -> std::convertible_to<std::size_t>;
+};
+// clang-format on
+
 } // namespace opal::_internal

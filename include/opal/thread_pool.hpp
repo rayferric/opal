@@ -2,7 +2,7 @@
 
 #include <atomic>             // std::atomic_flag
 #include <condition_variable> // std::condition_variable
-#include <cstdint>            // uint32_t
+#include <cstdint>            // std::uint32_t
 #include <exception>          // std::exception_ptr
 #include <functional>         // std::function
 #include <memory>             // std::shared_ptr
@@ -36,7 +36,7 @@ public:
 	///
 	/// @param thread_count number of threads
 	///
-	thread_pool(uint32_t thread_count = 0);
+	thread_pool(std::uint32_t thread_count = 0);
 
 	///
 	/// @brief Destroys the thread pool.
@@ -53,30 +53,30 @@ public:
 	///
 	/// @return future
 	///
-	std::shared_ptr<future> submit(std::function<void(uint32_t)> job);
+	std::shared_ptr<future> submit(std::function<void(std::uint32_t)> job);
 
 	///
 	/// @brief Returns the number of threads in the pool.
 	///
 	/// @return number of threads
 	///
-	uint32_t thread_count() const;
+	std::uint32_t thread_count() const;
 
 private:
 	struct job_item {
-		std::function<void(uint32_t)> job;
-		std::shared_ptr<opal::future> future;
+		std::function<void(std::uint32_t)> job;
+		std::shared_ptr<opal::future>      future;
 	};
 
-	std::vector<std::thread>                      threads;
-	std::unordered_map<std::thread::id, uint32_t> thread_id_to_index;
-	std::queue<job_item>                          queue;
+	std::vector<std::thread>                           threads;
+	std::unordered_map<std::thread::id, std::uint32_t> thread_id_to_index;
+	std::queue<job_item>                               queue;
 
 	std::mutex              queue_mutex;
 	std::condition_variable notifier;
 	std::atomic_flag        terminating;
 
-	void process(uint32_t thread_index, const future *quit_when_ready);
+	void process(std::uint32_t thread_index, const future *quit_when_ready);
 
 	friend future;
 };
