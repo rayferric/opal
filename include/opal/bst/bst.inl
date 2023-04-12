@@ -1,35 +1,10 @@
 #include <cmath>
 
-namespace opal {
+namespace opal::_internal {
 
-// constructors
-
-template <typename Value>
-bst<Value>::bst() : root(nullptr) {}
 
 template <typename Value>
-bst<Value>::bst(const bst &other)
-    : root(std::make_unique<_internal::bst_node<value_type>>(*other.root)) {}
-
-template <typename Value>
-bst<Value>::bst(bst &&other) noexcept : root(std::move(other.root)) {}
-
-// operators
-
-template <typename Value>
-bst<Value> &bst<Value>::operator=(const bst &rhs) {
-	root = std::make_unique<_internal::bst_node<value_type>>(*rhs.root);
-	return *this;
-}
-
-template <typename Value>
-bst<Value> &bst<Value>::operator=(bst &&rhs) noexcept {
-	root = std::move(rhs.root);
-	return *this;
-}
-
-template <typename Value>
-static std::vector<std::string> stringify(_internal::bst_node<Value> *node) {
+std::vector<std::string> stringify_bst(_internal::bst_node<Value> *node) {
 	// If there's no value, return empty.
 	if (!node) {
 		return {std::string{}};
@@ -105,10 +80,10 @@ static std::vector<std::string> stringify(_internal::bst_node<Value> *node) {
 
 	// Stringify the value and the children.
 	std::string              value = std::to_string(node->value);
-	std::vector<std::string> left  = node->left ? stringify(node->left.get())
+	std::vector<std::string> left  = node->left ? stringify_bst(node->left.get())
 	                                            : std::vector{std::string{"~"}};
 	std::vector<std::string> right = node->right
-	                                   ? stringify(node->right.get())
+	                                   ? stringify_bst(node->right.get())
 	                                   : std::vector{std::string{"~"}};
 
 	// Join the children horizontally, separated by a space:
@@ -216,9 +191,39 @@ static std::vector<std::string> stringify(_internal::bst_node<Value> *node) {
 	return children;
 }
 
+} // namespace opal::_internal
+
+namespace opal {
+
+// constructors
+
+template <typename Value>
+bst<Value>::bst() : root(nullptr) {}
+
+template <typename Value>
+bst<Value>::bst(const bst &other)
+    : root(std::make_unique<_internal::bst_node<value_type>>(*other.root)) {}
+
+template <typename Value>
+bst<Value>::bst(bst &&other) noexcept : root(std::move(other.root)) {}
+
+// operators
+
+template <typename Value>
+bst<Value> &bst<Value>::operator=(const bst &rhs) {
+	root = std::make_unique<_internal::bst_node<value_type>>(*rhs.root);
+	return *this;
+}
+
+template <typename Value>
+bst<Value> &bst<Value>::operator=(bst &&rhs) noexcept {
+	root = std::move(rhs.root);
+	return *this;
+}
+
 template <typename Value>
 std::ostream &operator<<(std::ostream &lhs, const bst<Value> &rhs) {
-	std::vector<std::string> lines = stringify<Value>(rhs.root.get());
+	std::vector<std::string> lines = _internal::stringify_bst<Value>(rhs.root.get());
 	for (std::string &line : lines) {
 		lhs << line << std::endl;
 	}
