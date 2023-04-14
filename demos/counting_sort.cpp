@@ -70,7 +70,7 @@ int main() {
 	    },
 	    numbers
 	);
-	
+
 	std::cout << std::endl << "Benchmarking std::sort..." << std::endl;
 
 	benchmark_sort(

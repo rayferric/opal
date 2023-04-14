@@ -77,8 +77,8 @@ int main() {
 	    numbers.end(),
 	    [&](const auto &a, const auto &b) {
 		    if (last_heap_state != numbers) {
-				std::cout << "Heap during comparison of " << a << " and " << b
-		              << ":" << std::endl;
+			    std::cout << "Heap during comparison of " << a << " and " << b
+			              << ":" << std::endl;
 			    print_heap(numbers);
 			    last_heap_state = numbers;
 		    }

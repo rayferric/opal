@@ -3,7 +3,10 @@ namespace opal::_internal {
 // custom counting sort implementation, optimized for radix sort
 template <_internal::iterator Iterator, _internal::indexer<Iterator> Indexer>
 static void radix_sort_counting_sort(
-    Iterator begin, Iterator end, const Indexer &indexer, std::vector<std::size_t> &counts
+    Iterator                  begin,
+    Iterator                  end,
+    const Indexer            &indexer,
+    std::vector<std::size_t> &counts
 ) {
 	// Count the number of occurrences of each value.
 	for (auto it = begin; it != end; it++) {

@@ -2,7 +2,6 @@
 
 namespace opal::_internal {
 
-
 template <typename Value>
 std::vector<std::string> stringify_bst(_internal::bst_node<Value> *node) {
 	// If there's no value, return empty.
@@ -80,8 +79,8 @@ std::vector<std::string> stringify_bst(_internal::bst_node<Value> *node) {
 
 	// Stringify the value and the children.
 	std::string              value = std::to_string(node->value);
-	std::vector<std::string> left  = node->left ? stringify_bst(node->left.get())
-	                                            : std::vector{std::string{"~"}};
+	std::vector<std::string> left = node->left ? stringify_bst(node->left.get())
+	                                           : std::vector{std::string{"~"}};
 	std::vector<std::string> right = node->right
 	                                   ? stringify_bst(node->right.get())
 	                                   : std::vector{std::string{"~"}};
@@ -223,7 +222,8 @@ bst<Value> &bst<Value>::operator=(bst &&rhs) noexcept {
 
 template <typename Value>
 std::ostream &operator<<(std::ostream &lhs, const bst<Value> &rhs) {
-	std::vector<std::string> lines = _internal::stringify_bst<Value>(rhs.root.get());
+	std::vector<std::string> lines =
+	    _internal::stringify_bst<Value>(rhs.root.get());
 	for (std::string &line : lines) {
 		lhs << line << std::endl;
 	}
