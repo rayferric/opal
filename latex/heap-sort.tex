@@ -1,0 +1,105 @@
+\section{Heap Sort}
+
+\subsection{Description}
+
+Heap sort is a $O(n \log n)$ comparison-based sorting algorithm, based on the heap data structure. It is a bit more complicated than single-threaded merge sort and does not exceed in performance. However, heap sort does not require any additional memory and is therefore a good alternative to merge sort when memory is scarce. Some notable properties of heap sort are:
+
+\begin{itemize}
+    \item It is in-place: only a constant amount of additional memory is needed.
+    \item It is not stable: equal elements can be reordered.
+    \item It is optimal: the average time complexity is $O(n \log n)$.
+\end{itemize}
+
+Finally, heap sort is an excellent improvement over $O(n^2)$ sorting algorithms such as insertion sort and selection sort.
+
+\subsection{Procedure}
+
+The algorithm works by maintaining a max-heap tree that consists of the values in the array. The heap always occupies the front portion of the array and it is used to progressively pick out the largest elements in the tree. At each step, the largest element is moved outside of the heap to the end of the array. Heap sort procedure is built around the \texttt{heapify} function that is used to restore the max-heap property of the tree if one of its nodes is misplaced.
+
+\begin{algorithmic}[1]
+    \State $A \gets ...$
+    
+    \State $n \gets \Call{length}{A}$
+    \State $i \gets \lfloor n \div 2 \rfloor$ \label{heap:root}
+    
+    \While{$i \geq 1$} \label{heap:build}
+        \State \Call{heapify}{$A, n, i$}
+        \State $i \gets i - 1$
+    \EndWhile
+
+    \While{$n \geq 2$}
+        \State \Call{swap}{$A[1], A[n]$} \label{heap:swap}
+        \State $n \gets n - 1$
+        \State \Call{heapify}{$A, n, 1$} \label{heap:fix}
+    \EndWhile
+\end{algorithmic}
+
+\begin{enumerate}
+    \item The algorithm begins by finding the index of the last non-leaf node in the tree. Tree is represented as an array containing the elements in level order. (line \ref{heap:root})
+    \item The tree is converted to a max-heap. This is done by calling \texttt{heapify} on each non-leaf node in the heap starting from the bottom of the tree. (line \ref{heap:build})
+    \item The heap is then sorted by repeatedly reducing the size of the heap by one element and moving the root of it (i.e. the largest element) outside of the heap. (line \ref{heap:swap})
+    \item Since the root is replaced by another element, each time the heap property needs to be restored. This is done by calling \texttt{heapify} once on the root node. (line \ref{heap:fix})
+    \item Every time before the heap is shrunk by one element, the largest element in the heap is moved to the end of it. This way, a sorted sequence is progressively built at the end of the array.
+\end{enumerate}
+
+\begin{algorithmic}[1]
+    \Function{heapify}{$A, n, i$}
+        \State $l \gets 2i$ \label{heap:left}
+        \State $r \gets 2i + 1$ \label{heap:right}
+
+        \State $x \gets i$ \label{heap:max}
+        
+        \If{$l \leq n$ and $A[l] > A[x]$}
+            \State $x \gets l$
+        \EndIf
+        
+        \If{$r \leq n$ and $A[r] > A[x]$}
+            \State $x \gets r$
+        \EndIf
+        
+        \If{$x \neq i$} \label{heap:found-max}
+            \State \Call{swap}{$A[i], A[x]$}
+            \State \Call{heapify}{$A, n, x$} \label{heap:recurse}
+        \EndIf
+    \EndFunction
+\end{algorithmic}
+
+\begin{enumerate}
+    \item The function begins by finding the indices of the left and right child nodes of the current node. (lines \ref{heap:left} and \ref{heap:right})
+    \item The index of the largest element is initialized to the current node. Subsequently, the left and right child nodes are compared to the current node and the largest one of them is found. (line \ref{heap:max})
+    \item If the largest element is one of the children, the current node is swapped with it and the function is called recursively on the child node. (lines \ref{heap:found-max} and \ref{heap:recurse})
+    \item After the last recursive call finishes, the heap property is restored.
+\end{enumerate}
+
+\subsection{Computational Complexity}
+
+In order to find the total time complexity of heap sort, we shall first analyze the \texttt{heapify} sub-procedure. \texttt{heapify} descends one level down during each recursive call, so in the worst case, the total number of recursive calls is equal to the depth of the heap (i.e. a well balanced binary tree), which is $\lfloor \log_2 n \rfloor$. Other than that, \texttt{heapify} does not use any loops, so the final complexity of \texttt{heapify} is $O(\log n)$.
+
+The loop used to build the max-heap is executed $\lfloor n \div 2 \rfloor$ times, so the time complexity of the heap building step is:
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= \sum_{i=1}^{\lfloor n \div 2 \rfloor} O(\log n) \\
+        &= O(n \log n)
+    \end{aligned}
+\end{equation*}
+
+The second loop used to shrink the tree and fix the heap property is executed $n - 1$ times, so the time complexity of the heap sorting step is:
+
+\begin{equation*}
+    \begin{aligned}
+        a &= const. \\
+        T(n) &= \sum_{i=1}^{n - 1} (O(\log n) + a) \\
+        &= O(n \log n)
+    \end{aligned}
+\end{equation*}
+
+Finally, the overall worst-case computational complexity of heap sort is the maximum of the time complexities of the two steps, which is $O(n \log n)$.
+
+Since the heap sorting step is always executed after the max-heap building step, it will always replace the largest element in the heap with one of the smallest elements in the tree. This means that calls to \texttt{heapify} during the heap sorting step will always have the same time complexity of $\Theta(\log n)$. This ensures that the total time complexity of heap sort is exactly $\Theta(n \log n)$.
+
+\begin{equation*}
+    T(n) = \Theta(n \log n)
+\end{equation*}
+
+\textbf{Note:} If the array only contained the same value repeated multiple times, \texttt{heapify} would never be called recursively, so the computational complexity of heap sort would be $\Omega(n)$. In some literature this edge case is taken care of by using inclusive bounds in the \texttt{heapify} function to ensure the exact time complexity of $\Theta(n \log n)$.

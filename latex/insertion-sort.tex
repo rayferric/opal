@@ -1,0 +1,86 @@
+\section{Insertion Sort}
+
+\subsection{Description}
+
+Insertion sort is a simple sorting algorithm that builds the final sorted array linearly. It is much less efficient on large lists than more advanced algorithms such as quicksort or merge sort. Insertion sort, however, provides certain advantages:
+
+\begin{itemize}
+    \item It is in-place: only a constant amount of additional memory is needed.
+    \item It is stable: equal elements will never be reordered.
+    \item It is online: it can sort a list as it receives it.
+\end{itemize}
+
+Because of its stability and portability, insertion sort is often used as a subroutine in more advanced divide-and-conquer algorithms.
+
+\subsection{Procedure}
+
+The canonical implementation of the algorithm \cite{cormen}:
+
+\begin{algorithmic}[1]
+    \State $A \gets ...$
+    \For{$i = 2,3,...,\Call{length}{A}$} \label{insert:step}
+        \State $a \gets A[i]$ \label{insert:focus}
+        \State $j \gets i - 1$
+        \While{$j \neq 0$ \textbf{and} $a < A[j]$} \label{insert:shift}
+            \State $A[j + 1] \gets A[j]$
+            \State $j \gets j - 1$
+        \EndWhile
+        \State $A[j + 1] \gets a$ \label{insert:insert}
+    \EndFor
+\end{algorithmic}
+
+\begin{enumerate}
+    \item The procedure starts by focusing each element starting from the second one up to the last one. (line \ref{insert:step})
+    \item The currently focused element is saved to a separate variable as it might be overwritten in subsequent steps. (line \ref{insert:focus})
+    \item Previous elements are shifted one position to the right until the right spot for the focused value is found. (line \ref{insert:shift})
+    \item Finally, the focused value is inserted in the old place of the most recently shifted element. If no elements were shifted, the focused value will be inserted in the same place where it has been. (line \ref{insert:insert})
+\end{enumerate}
+
+\subsection{Computational Complexity}
+
+To analyze the computational complexity of insertion sort, one must count the number of times that both the outer for-loop and the inner while-loop are iterated. The number of outer-loop iterations is equal to the number of elements in the array minus one. The number of inner-loop iterations ranges from one to the number of elements in the array minus one, but it also depends on the order of the elements in the array. However, the average number of inner-loop iterations is approximately equal to the number of elements in the array divided by two. This results in the following formulae:
+
+\begin{equation*}
+    \begin{aligned}
+        N_i &= n - 1 \\
+        N_j &= \frac{1}{2}n \\
+    \end{aligned}
+\end{equation*}
+
+The best case scenario occurs when the array is already sorted. In this case, the algorithm will perform only $N_i$ outer-loop iterations and no inner-loop iterations at all.
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= N_i + N_i \cdot 0 \\
+        &= n - 1 \\
+        &= \Omega(n)
+    \end{aligned}
+\end{equation*}
+
+The worst case scenario is when the array is sorted in reverse order. In this case, the algorithm will perform $N_i$ outer-loop iterations and each time around $N_j$ more inner-loop iterations.
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= N_i + N_i \cdot N_j \\
+        &= (n - 1) + \frac{1}{2}n(n - 1) \\
+        &= \frac{1}{2}n^2 + \frac{1}{2}n - 1 \\
+        &= O(n^2)
+    \end{aligned}
+\end{equation*}
+
+The algorithm performs similarly in the average case scenario as well. This produces the following table:
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \multicolumn{3}{|c|}{Computational Complexity} \\
+        \hline
+        \textbf{Best} & \textbf{Worst} & \textbf{Average} \\
+        \hline
+        \small$\Omega(n)$ & \small$O(n^2)$ & \small$n^2$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+It is worth noting that such low computational complexity in the best case scenario for this algorithm makes it an excellent choice to use with nearly sorted arrays as the performance hit is negligible.

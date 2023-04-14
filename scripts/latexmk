@@ -3,7 +3,7 @@
 import os, shutil
 
 print("\nCompiling LaTeX...")
-cmd = "latexmk -pdf -outdir=./.cache/latexmk ./latex/opal"
+cmd = "cd ./latex && latexmk -pdf -outdir=../.cache/latexmk ./opal"
 print(f"$ {cmd}")
 os.system(cmd)
 

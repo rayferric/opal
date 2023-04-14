@@ -2,7 +2,7 @@
 
 #include <concepts> // std::integral
 
-#include "concepts.hpp"
+#include "../concepts.hpp"
 
 namespace opal {
 

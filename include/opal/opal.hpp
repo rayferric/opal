@@ -1,9 +1,9 @@
 #pragma once
 
 #include "bst/bst.hpp"
-#include "counting_sort.hpp"
-#include "heap_sort.hpp"
-#include "insertion_sort.hpp"
-#include "merge_sort.hpp"
-#include "quick_sort.hpp"
-#include "radix_sort.hpp"
+#include "linsort/counting_sort.hpp"
+#include "linsort/radix_sort.hpp"
+#include "sort/heap_sort.hpp"
+#include "sort/insertion_sort.hpp"
+#include "sort/merge_sort.hpp"
+#include "sort/quick_sort.hpp"

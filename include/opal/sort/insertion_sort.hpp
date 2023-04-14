@@ -2,12 +2,12 @@
 
 #include <functional> // std::less
 
-#include "concepts.hpp"
+#include "../concepts.hpp"
 
 namespace opal {
 
 ///
-/// @brief Sorts the elements in the range [begin, end) using the heap sort
+/// @brief Sorts the elements in the range [begin, end) using the insertion sort
 /// algorithm.
 ///
 /// @tparam Iterator the type of iterator
@@ -21,10 +21,10 @@ namespace opal {
 template <
     _internal::iterator             Iterator,
     _internal::comparator<Iterator> Comparator = decltype(std::less{})>
-void heap_sort(
+void insertion_sort(
     Iterator begin, Iterator end, const Comparator &comparator = Comparator{}
 );
 
 } // namespace opal
 
-#include "heap_sort.inl"
+#include "insertion_sort.inl"

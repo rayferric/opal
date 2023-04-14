@@ -2,7 +2,7 @@
 
 #include <functional> // std::less
 
-#include "concepts.hpp"
+#include "../concepts.hpp"
 
 namespace opal {
 

@@ -2,8 +2,8 @@
 
 #include <functional> // std::less
 
-#include "concepts.hpp"
-#include "thread_pool.hpp"
+#include "../concepts.hpp"
+#include "../thread_pool.hpp"
 
 namespace opal {
 

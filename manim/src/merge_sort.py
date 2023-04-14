@@ -235,7 +235,7 @@ def merge_sort(scene, array, raw_array, l, u):
         merge(scene, array, raw_array, l, m, u)
 
 
-class InsertionSort(MovingCameraScene):
+class MergeSort(MovingCameraScene):
     def construct(self):
         title = Text("Merge Sort", font_size=50)
 
