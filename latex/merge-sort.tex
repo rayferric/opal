@@ -18,7 +18,7 @@ Common implementation of the algorithm:
 
 \begin{algorithmic}[1]
     \State $A \gets ...$
-    \State $A \gets \Call{merge-sort}{A, 1, \Call{length}{A} + 1} $
+    \State $\Call{merge-sort}{A, 1, \Call{length}{A} + 1} $
 
     \Function{merge-sort}{$A, l, u$}
         \If{$u - l > 1$} \label{merge:check}
@@ -96,6 +96,7 @@ It follows that the worst, the best, and the average case complexity of merge so
 \end{equation*}
 
 \subsection{Optimizations}
+\label{merge-sort:optimizations}
 
 In order to push the performance of merge sort even further, two concurrent execution threads can be spawned at each level of recursion. This is possible because both sub-arrays do not overlap at all which in turn eliminates data dependencies. The two threads can then sort their respective sub-arrays independently and let the supervising thread merge the results.
 

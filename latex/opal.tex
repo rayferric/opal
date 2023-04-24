@@ -17,6 +17,8 @@
 
 \MakeRobust{\Call}
 
+\algdef{SE}[DOWHILE]{DoWhile}{EndDoWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}
+
 \title{
     OPAL \\
     \large{Overpowered Algorithm Library}
@@ -32,6 +34,7 @@
     \include{insertion-sort}
     \include{merge-sort}
     \include{heap-sort}
+    \include{quick-sort}
     
     \clearpage
     \begin{thebibliography}{1}

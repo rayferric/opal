@@ -1,0 +1,170 @@
+\section{Quick Sort}
+
+\subsection{Description}
+
+% Example:
+% Insertion sort is a simple sorting algorithm that builds the final sorted array linearly. It is much less efficient on large lists than more advanced algorithms such as quicksort or merge sort. Insertion sort, however, provides certain advantages:
+Quick sort, similarly to merge sort is a divide-and-conquer algorithm. However in most cases, it is much more efficient than merge sort. One drawback of quick sort is that it is not stable, so it is not a brain-dead replacement for merge sort. Some properties of quick sort:
+% Heap sort Example
+% \begin{itemize}
+%     \item It is in-place: only a constant amount of additional memory is needed.
+%     \item It is not stable: equal elements can be reordered.
+%     \item It is optimal: the average time complexity is $O(n \log n)$.
+% \end{itemize}
+\begin{itemize}
+    \item It is in-place: only a constant amount of additional memory is needed.
+    \item It is parallelizable: various parts of the algorithm can be run concurrently without data races.
+    \item It is not stable: equal elements can be reordered.
+    \item It is optimal: the average time complexity is $O(n \log n)$.
+\end{itemize}
+
+\subsection{Procedure}
+
+% Example for heap sort:
+% The algorithm works by maintaining a max-heap tree that consists of the values in the array. The heap always occupies the front portion of the array and it is used to progressively pick out the largest elements in the tree. At each step, the largest element is moved outside of the heap to the end of the array. Heap sort procedure is built around the \texttt{heapify} function that is used to restore the max-heap property of the tree if one of its nodes is misplaced.
+
+The algorithm works by recursively partitioning the array into two sub-arrays. The first sub-array contains all elements that are smaller or than equal to the pivot and the second one contains all elements that are greater than or equal to the pivot. Quick sort comes in multiple flavors, meaning that there are multiple ways to choose the pivot. The most common two are the Lomuto partition scheme and the Hoare partition scheme. In OPAL I use the Hoare partition scheme, which is usually more efficient than the Lomuto partition scheme. One notable difference between the two partitioning schemes is that in Hoare partitioning the pivot must be included in the first sub-array, whereas in Lomuto partition scheme it can be left out of both sub-arrays. The procedure for quick sort is as follows:
+
+\begin{algorithmic}[1]
+    \State $A \gets ...$
+    \State $\Call{quick-sort}{A, 1, \Call{length}{A} + 1}$
+
+    \Function{quick-sort}{$A, l, u$}
+        \If{$u - l > 1$} \label{quick:check}
+            \State $p \gets \Call{partition-hoare}{A, l, u}$ \label{quick:partition}
+            
+            \State $ \Call{quick-sort}{A, l, p}$ \label{quick:left}
+            \State $ \Call{quick-sort}{A, p, u}$ \label{quick:right}
+        \EndIf
+    \EndFunction
+\end{algorithmic}
+
+\begin{enumerate}
+    \item The algorithm begins by checking if the sub-array is of size greater than one. (line \ref{quick:check})
+    \item If the sub-array is of size greater than one, it is partitioned into two sub-arrays. Each sub-array only contains elements that are smaller than or equal to the pivot and greater than or equal to the pivot respectively. (line \ref{quick:partition})
+    \item Each of the two sub-arrays is then recursively sorted. (lines \ref{quick:left} and \ref{quick:right})
+\end{enumerate}
+
+In Hoare partitioning the pivot is chosen as the first element in the array. The partitioning is done by iterating the array from both ends and swapping elements that are on the wrong side of the pivot. In code, it is implemented as follows:
+
+\begin{algorithmic}[1]
+    \Function{partition-hoare}{$A, l, u$}
+        \State $p \gets A[l]$ \label{partition:pivot}
+        \State $i \gets l - 1$ \label{partition:left}
+        \State $j \gets u$ \label{partition:right}
+        
+        \Loop
+            \DoWhile
+                \State $i \gets i + 1$ \label{partition:inc-left}
+            \EndDoWhile{$A[i] < p$}
+
+            \DoWhile
+                \State $j \gets j - 1$ \label{partition:dec-right}
+            \EndDoWhile{$A[j] > p$}
+
+            \If{$i \ge j$}
+                \State \Return $j + 1$ \label{partition:return}
+            \EndIf
+
+            \State $\Call{swap}{A[i], A[j]}$ \label{partition:swap}
+        \EndLoop
+    \EndFunction
+\end{algorithmic}
+
+\begin{enumerate}
+    \item The function begins by choosing the first element in the array as the pivot. (line \ref{partition:pivot})
+    \item The function then initializes two iterators, one before the beginning of the array and one right beyond the last element of the array. (lines \ref{partition:left} and \ref{partition:right})
+    \item The function then iterates the array from both ends and swaps elements that are on the wrong side of the pivot. (lines \ref{partition:inc-left}, \ref{partition:dec-right} and \ref{partition:swap})
+    \item If the two iterators meet, the function returns the index of the pivot. (line \ref{partition:return})
+    \item The function continues until the two iterators meet, at which point it returns the index after the right iterator as the pivot.
+\end{enumerate}
+
+It's important to note that the pivot element must be included in the first sub-array. This is because the element at pivot index will not necessarily end up as the largest element in the first sub-array.
+
+\subsection{Computational Complexity}
+
+In order to find the total time complexity of quick sort with Hoare partitioning, we need to analyze both the partitioning step and the recursive branching routine.
+
+The infinite loop in the partitioning function is guaranteed to terminate because the two iterators will eventually meet. In particular, they meet after approximately $n$ comparisons. Therefore, the time complexity of the partitioning step is $\Theta(n)$.
+
+After partitioning the array, quick sort recursively sorts the two sub-arrays created by the partitioning step. The time complexity of quick sort can be expressed recursively as:
+
+\begin{equation*}
+    T(n) = \begin{cases}
+        O(1), & n \leq 1 \\
+        T(k_n - 1) + T(n - (k_n - 1)) + \Theta(n), & n > 1
+    \end{cases}
+\end{equation*}
+
+...where $k_n$ is the index of the pivot for the given array length.
+
+In the worst case, the pivot is either the second or the last element in the array. The former is true, because the furthest the right iterator will ever stop is the first index. Then it will be incremented once just before being returned. As for the latter, we choose the first element as the initial pivot which ensures that the right iterator will be decremented by at least 2. This leads to $k_n = 2$ or $k_n = n$ respectively. That in turn means that in the worst case one of the sub-arrays will have a size of 1. This can be described using the following recurrence relation:
+
+\begin{equation*}
+    T_{worst}(n) = \begin{cases}
+        O(1), & n \leq 1 \\
+        T(n-1) + \Theta(n), & n > 1
+    \end{cases}
+\end{equation*}
+
+Solving this recurrence relation using the substitution method, we get:
+
+\begin{equation*}
+    T_{worst}(n) = \sum_{i=1}^{n} \Theta(n) = \Theta(n^2)
+\end{equation*}
+
+However, this worst-case scenario is very unlikely to occur in practice, especially if we use a good pivot selection method such as the Hoare's scheme. In the average case, both sub-arrays will have sizes of around $\frac{n}{2}$:
+
+\begin{equation*}
+    T_{avg}(n) = \begin{cases}
+        O(1), & n \leq 1 \\
+        2T\left(\frac{n}{2}\right) + \Theta(n), & n > 1
+    \end{cases}
+\end{equation*}
+
+We can solve this recurrence relation using the master theorem:
+
+\begin{equation*}
+    \begin{aligned}
+        T_{avg}(n) &= aT\left(\frac{n}{b}\right) + f(n) \\
+        a &= 2 \\
+        b &= 2 \\
+        f(n) &= \Theta(n) \\
+        \log_b a &= 1 \\
+        f(n) &= \Theta(n^{\log_b a}) \\
+        \implies T(n)_{avg} &= \Theta(n^{\log_b a} \log n) \\
+        &= \Theta(n \log n)
+    \end{aligned}
+\end{equation*}
+
+Therefore, the overall worst-case computational complexity of quick sort with Hoare partitioning is $O(n^2)$, and the average-case computational complexity is $O(n\log n)$.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \multicolumn{3}{|c|}{Computational Complexity} \\
+        \hline
+        \textbf{Best} & \textbf{Worst} & \textbf{Average} \\
+        \hline
+        \small$\Omega(n \log n)$ & \small$O(n^2)$ & \small$n \log n$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Optimizations}
+
+To improve the performance of quick sort, we can switch to a different sorting algorithm at some depth of recursion. Such a technique may additionally reduce the worst-case complexity of quick sort to $O(n \log n)$.
+
+In OPAL, quick-sort can switch to two different algorithms at different points of recursion. The first algorithm is insertion sort, which is used for small sub-arrays whose size is less than 64. This constant is taken directly from OPAL's merge sort. (\ref{merge-sort:optimizations}) The second algorithm is heap sort, which is used if the size of the array drops below a dynamic threshold:
+
+\begin{equation*}
+    \begin{aligned}
+        n_{threshold} &= 2 \lfloor \log_2 n \rfloor \\
+    \end{aligned}
+\end{equation*}
+
+Please note that this exact technique does not reduce the worst-case complexity of quick sort, but it has significantly improved the average-case performance during testing.
+
+As a third mean of improving the performance of quick sort, OPAL makes use of multithreading. Namely, quick sort offloads each new level of recursion to two new threads. This technique is exactly the one used in merge sort along with the thread count limiting, which is done in an identical manner. (\ref{merge-sort:optimizations})
+
