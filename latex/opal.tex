@@ -14,10 +14,14 @@
 \usepackage{algpseudocode}
 \usepackage{hyperref}
 \usepackage[nottoc,numbib]{tocbibind}
+\usepackage[edges]{forest}
+\usepackage{caption}
 
 \MakeRobust{\Call}
 
 \algdef{SE}[DOWHILE]{DoWhile}{EndDoWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}
+
+\captionsetup{labelformat=empty}
 
 \title{
     OPAL \\
@@ -35,6 +39,9 @@
     \include{merge-sort}
     \include{heap-sort}
     \include{quick-sort}
+    \include{counting-sort}
+    \include{radix-sort}
+    \include{bst}
     
     \clearpage
     \begin{thebibliography}{1}

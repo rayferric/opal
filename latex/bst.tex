@@ -1,0 +1,158 @@
+\section{Binary Search Tree}
+
+\subsection{Description}
+
+Binary search tree (BST) is a data structure that allows for efficient lookup, insertion and deletion of elements. It is a binary tree in which all nodes in the left subtree of a node have a value which is less than the value of the node, and all nodes in the right subtree have a value which is greater than the value of the node.
+
+% algorighm enclosed in a mathematical brace:
+% node \rightarrow value < LEFT(node) \rightarrow value
+% RIGHT(node) \rightarrow value < node \rightarrow value
+\begin{equation*}
+    \begin{aligned}
+        \forall N \in BST:
+        \left\{
+            \begin{array}{l}
+                \Call{VALUE}{N} < \Call{MIN}{\Call{RIGHT}{N}} \\
+                \Call{VALUE}{N} > \Call{MAX}{\Call{LEFT}{N}}
+            \end{array}
+        \right.
+    \end{aligned}
+\end{equation*}
+
+This allows for efficient lookup, insertion and deletion of elements because each of those operations benefits from binary search.
+
+\begin{figure*}[h]
+    \centering
+    \begin{forest}
+        for tree={circle, draw, minimum size=2em, inner sep=0pt, s sep=1.5em, l sep=1.5em}
+        [8
+            [3
+                [1]
+                [6
+                    [4]
+                    [7]
+                ]
+            ]
+            [10
+                [,no edge, draw=none]
+                [14
+                    [13]
+                    [,no edge, draw=none]
+                ]
+            ]
+        ]
+    \end{forest}
+    \caption{Example of a BST}
+\end{figure*}
+
+\subsection{Binary Search}
+
+Binary search is what allows for efficient lookup in a binary search tree. It works by comparing the value of the node with the value of the element which in conjunction with the property of BST allows for extremely efficient search in logarithmic time.
+
+\begin{algorithmic}[1]
+    \Function{binary-search}{N, x}
+        \If{N = 0 or \Call{value}{N} = x}
+            \State \Return N
+        \EndIf
+        \If{x < \Call{value}{N}}
+            \State \Return \Call{binary-search}{\Call{left}{N}, x}
+        \Else
+            \State \Return \Call{binary-search}{\Call{right}{N}, x}
+        \EndIf
+    \EndFunction
+\end{algorithmic}
+
+\subsection{Insertion}
+
+BST insertion is carried out by first finding the place for the new node using binary search, and then inserting the node in the place of a leaf node.
+
+\begin{algorithmic}[1]
+    \Function{insert}{N, x}
+        \If{N = 0}
+            \State N $\gets$ \Call{node}{x}
+        \ElsIf{x < \Call{value}{N}}
+            \State \Call{insert}{\Call{left}{N}, x}
+        \Else
+            \State \Call{insert}{\Call{right}{N}, x}
+        \EndIf
+    \EndFunction
+\end{algorithmic}
+
+\subsection{Erasure}
+
+BST erasure is done in three different ways depending on the number of children of the node to be erased. If the node has no children, it is simply removed from the tree. If the node has one child, the child is moved to the place of the node. And if the node has both children, the node is replaced with its in-order successor, which is the smallest node in the right subtree of the node.
+
+\begin{algorithmic}[1]
+    \Function{erase}{N, x}
+        \If{N = 0}
+            \State \Return
+        \EndIf
+        \If{x < \Call{value}{N}}
+            \State \Call{erase}{\Call{left}{N}, x}
+        \ElsIf{x > \Call{value}{N}}
+            \State \Call{erase}{\Call{right}{N}, x}
+        \Else
+            \If{\Call{left}{N} = 0 and \Call{right}{N} = 0}
+                \State N $\gets$ 0
+            \ElsIf{\Call{left}{N} = 0}
+                \State N $\gets$ \Call{right}{N}
+            \ElsIf{\Call{right}{N} = 0}
+                \State N $\gets$ \Call{left}{N}
+            \Else
+                \State N $\gets$ \Call{next}{N}
+            \EndIf
+        \EndIf
+    \EndFunction
+\end{algorithmic}
+
+\subsection{Implementation}
+
+OPAL implements BST as an STL-compatible container. It is structured as a tree in which each node has a pointer to its parent, and two unique pointers to its children. Keeping track of node's parent allows for efficient insertion and deletion of values, because this way the operations do not have to remember the parent node. The parent pointer also enables \lstinline[columns=fixed]{bst_iterator} to easily find path to the next node in order.
+
+\begin{lstlisting}[language=C++, caption=Node]
+template <typename Value>
+class bst_node {
+public:
+    Value                value;
+    bst_node            *parent;
+    unique_ptr<bst_node> left, right;
+
+    // ...
+};
+\end{lstlisting}
+
+\textbf{Note:} \lstinline[columns=fixed]{bst_node} is not a part of interface of the container, and is only used internally. \lstinline[columns=fixed]{bst_iterator} is a front-end to \lstinline[columns=fixed]{bst_node}.
+
+\begin{lstlisting}[language=C++, caption=Tree Container]
+template <typename Value>
+class bst {
+public:
+    // ...
+
+private:
+    unique_ptr<bst_node<Value>> root;
+};
+\end{lstlisting}
+
+OPAL also provides a \lstinline[columns=fixed]{bst_iterator}, which is an STL-compatible iterator. It is implemented as a wrapper around a pointer to the current node and the root of the tree. It also stores the type of the iterator, which is used to determine how to walk to the next node in order. The pointer to the root is needed to correctly handle end iterator which by design points to a \lstinline[columns=fixed]{nullptr}.
+
+\begin{lstlisting}[language=C++, caption=Iterator]
+enum class bst_iterator_type {
+    in_order,
+    pre_order,
+    post_order
+};
+
+template <typename Value>
+class bst_iterator {
+public:
+    // ...
+
+private:
+    bst_node<Value>  *root;
+    bst_node<Value>  *node;
+    bst_iterator_type type;
+};
+\end{lstlisting}
+
+\textbf{Note:} The iterator walks to the next node by following branches around the tree. This is not the most efficient way to execute a full traversal of the tree, but it allows for most flexibility. If the user wants to execute a full traversal with the highest performance possible, they can do so by recursively using \lstinline[columns=fixed]{bst_iterator::left and bst_iterator::right} methods.

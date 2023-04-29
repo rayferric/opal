@@ -14,7 +14,7 @@ void print_vector(const std::vector<T> &v) {
 	std::cout << std::endl;
 }
 
-constexpr std::size_t  n     = 1000000;
+constexpr std::size_t  n     = 10000000;
 constexpr std::int32_t range = 100000000;
 
 template <typename Sort, typename TestComparator = decltype(std::less{})>
@@ -72,21 +72,21 @@ int main() {
 	);
 
 	std::cout << std::endl
-	          << "Benchmarking opal::counting_sort..." << std::endl;
-
-	benchmark_sort(
-	    [](auto begin, auto end) {
-		    opal::counting_sort(begin, end);
-	    },
-	    numbers
-	);
-
-	std::cout << std::endl
 	          << "Benchmarking opal::radix_sort (radix 1024)..." << std::endl;
 
 	benchmark_sort(
 	    [](auto begin, auto end) {
 		    opal::radix_sort(begin, end, 1024);
+	    },
+	    numbers
+	);
+
+	std::cout << std::endl
+	          << "Benchmarking opal::counting_sort..." << std::endl;
+
+	benchmark_sort(
+	    [](auto begin, auto end) {
+		    opal::counting_sort(begin, end);
 	    },
 	    numbers
 	);

@@ -1,0 +1,57 @@
+\section{Radix Sort}
+
+\subsection{Description}
+
+Radix sort which works by sorting numbers digit by digit. This means that, like counting sort, it is only applicable to arrays of non-negative integers. However, it is extremely fast with huge arrays. Some characteristic aspects of radix sort are:
+
+\begin{itemize}
+    \item It is stable: equal elements will never be reordered.
+    \item It is linear: it runs in linear time.
+\end{itemize}
+
+\subsection{Procedure}
+
+Radix sort is usually implemented using counting sort as a subroutine. The algorithm first sorts the input array by the least significant digit, then by the second least significant digit, and so on until the most significant digit. This can be described using an extremely simplified pseudocode:
+
+\begin{algorithmic}[1]
+    \State $A \gets ...$
+    \State $d \gets$ number of digits in the maximum value in $A$
+
+    \For{$i = d, d - 1, ..., 1$} \label{radix:loop}
+        \State stable-sort $A$ while identifying its elements by their $i$-th digit
+    \EndFor
+\end{algorithmic}
+
+It is important for the sorting subroutine to be stable, otherwise the algorithm will not work as expected because sorting by any digit will scramble previous work.
+
+\subsection{Computational Complexity}
+
+The computational complexity of radix sort mainly depends on the sorting subroutine. Usually it is counting sort, which has a computational complexity of $\Theta(n + k)$, where $n$ is the length of the input array and $k$ is the maximum value in the input array. In the case of radix sort $k$ is equal to the chosen radix. Radix sort uses a single loop that iterates over the number of digits in the maximum value in the input array. This results in the following formulae:
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= \sum_{i = 1}^{d} (n + k) \\
+        &= d(n + k) \\
+        &= \Theta(d(n + k))
+    \end{aligned}
+\end{equation*}
+
+...where $d$ is the number of digits in the maximum value in the input array and $k$ is the radix. This leads to the conclusion that the computational complexity of radix sort is precisely $\Theta(d(n + k))$.
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= \Theta(d(n + k))
+    \end{aligned}
+\end{equation*}
+
+\subsection{Optimizations}
+
+One optimization radix sort can take advantage of is to use a radix different than $10$. Counting sort has to allocate a temporary array of $k$ counters, but this buffer can pre-cached before sorting and thus it is feasible to allocate a larger one. This is why radix sort benefits from using a larger radix. OPAL by default uses a radix of $256$ which greatly improves performance of radix sort.
+
+Additionally, the output buffer used by counting sort can similarly be pre-allocated and reused between iterations.
+
+Double-buffering can be used to avoid copying the output buffer back to the input buffer after each iteration. This is done by alternating between using the input buffer as the output buffer and vice versa.
+
+\subsection{Sorting Non-Integer Arrays}
+
+Similarly to counting sort, radix-sort can employ hash functions to sort non-integer arrays. See \ref{count:non-integer} for details.

@@ -1,0 +1,80 @@
+\section{Counting Sort}
+
+\subsection{Description}
+
+Counting sort is a different kind of sorting algorithm. It is not comparison-based, but rather uses the actual values of the elements in the input list to order them. It is only applicable to lists of integers, but it is extremely fast and stable. Notable properties of counting sort include:
+
+\begin{itemize}
+    \item It is not in-place: it must allocate auxiliary buffers.
+    \item It is stable: equal elements will never be reordered.
+    \item It is linear: it runs in linear time.
+\end{itemize}
+
+\subsection{Procedure}
+
+The canonical implementation of the algorithm \cite{cormen}:
+
+\begin{algorithmic}[1]
+    \State $A \gets ...$
+    \State $C \gets$ array of $\Call{max}{A} + 1$ zeros \label{count:counters}
+    
+    \For{$i = 1, 2, ...,\Call{length}{A}$} \label{count:count}
+        \State $C[A[i]] \gets C[A[i]] + 1$
+    \EndFor
+
+    \For{$i = 2, 3, ..., \Call{length}{C}$} \label{count:sum}
+        \State $C[i] \gets C[i] + C[i - 1]$
+    \EndFor
+
+    \State $B \gets$ array of size $\Call{length}{A}$ \label{count:output}
+
+    \For{$i = \Call{length}{A}, \Call{length}{A} - 1, ..., 1$} \label{count:sort}
+        \State $B[C[A[i]]] \gets A[i]$
+        \State $C[A[i]] \gets C[A[i]] - 1$
+    \EndFor
+
+    \State $A \gets B$ \label{count:copy}
+\end{algorithmic}
+
+\begin{enumerate}
+    \item The procedure starts by allocating an array of counters. The size of the array is equal to the maximum value in the input array plus one so that it can fit all possible values from zero up to the maximum value. (line \ref{count:counters})
+    \item The algorithm then counts the number of occurrences of each value in the input array. (line \ref{count:count})
+    \item The algorithm then computes the number of elements that are less than or equal to each value in the input array. The resulting counts are also the correct indices for the last occurrence of each value in the output array. (line \ref{count:sum})
+    \item The algorithm then initializes an output buffer of the same size as the input array. (line \ref{count:output})
+    \item The algorithm then iterates over the input array in reverse order. For each element, it places the element in the output array at the index given by the corresponding counter. It then decrements the counter to point to the previous possible place for the same value. (line \ref{count:sort})
+    \item Finally, the output array is copied back into the input array. (line \ref{count:copy})
+\end{enumerate}
+
+\subsection{Computational Complexity}
+
+As mentioned before, counting sort is a linear time algorithm.  The first loop iterates over the input array once, then the second loop iterates over the counters, and finally the third loop iterates over the input array again. This results in the following formulae:
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= N_i + N_j + N_k \\
+        &= n + k + n \\
+        &= 2n + k \\
+        &= O(n + k)
+    \end{aligned}
+\end{equation*}
+
+...where $n$ is the length of the input array and $k$ is the maximum value in the input array. This also means that the algorithm has the exact computational complexity of $\Theta(n + k)$.
+
+\begin{equation*}
+    \begin{aligned}
+        T(n) &= \Theta(n + k)
+    \end{aligned}
+\end{equation*}
+
+\subsection{Sorting Non-Integer Arrays}
+\label{count:non-integer}
+
+Counting sort is only applicable to lists of integers. However, it is possible to sort lists of non-integer values using counting sort by first mapping the values to integers. This can be done by using a hash function to map the values to integers. The hash function must be able to map each value to non-negative integers. OPAL for this purpose allows the user to define a custom indexer function:
+
+\begin{algorithmic}[1]
+    \Function{Indexer}{$x$}
+        \State \Return non-negative integer representation of $x$
+    \EndFunction
+\end{algorithmic}
+
+OPAL's counting sort implementation is also able to automatically generate the indexer function for integer types. This enables the algorithm to sort negative integers without requiring any additional configuration.

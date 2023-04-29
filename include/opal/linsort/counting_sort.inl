@@ -20,6 +20,7 @@ void counting_sort(
 		}
 	}
 
+	// Create a list of counters for each value.
 	std::vector<std::size_t> counts(max_index + 1, 0);
 
 	// Count the number of occurrences of each value.
@@ -46,6 +47,8 @@ void counting_sort(
 		// Decrement the count to make sure the next instance of this value will
 		// be inserted next to this one.
 		counts[index]--;
+
+		// Put the element in its correct position.
 		sorted[counts[index]] = std::move(*it);
 	}
 
@@ -55,21 +58,30 @@ void counting_sort(
 
 template <bool Ascending, _internal::iterator Iterator>
 void counting_sort(Iterator begin, Iterator end) {
+	// Find the minimum and the maximum in the array.
 	auto min = *std::min_element(begin, end);
 	auto max = *std::max_element(begin, end);
 
+	// Find the maximum index when mapping [min, max] to [0, max - min].
 	using value_type      = typename Iterator::value_type;
 	std::size_t max_index = max - min;
 
+	// Sort the array either in ascending or descending order.
 	if constexpr (Ascending) {
+		// Map [min, max] to [0, max - min].
 		auto indexer = [min](const value_type &value) {
 			return value - min;
 		};
+
+		// Sort the array.
 		counting_sort(begin, end, indexer, max_index);
 	} else {
+		// Map [min, max] to [max - min, 0].
 		auto indexer = [max](const value_type &value) {
 			return max - value;
 		};
+
+		// Sort the array.
 		counting_sort(begin, end, indexer, max_index);
 	}
 }
