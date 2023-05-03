@@ -7,7 +7,7 @@ static void radix_sort_counting_sort(
     Iterator                  end,
     const Indexer            &indexer,
     std::vector<std::size_t> &counts,
-	Iterator				  sorted_begin
+    Iterator                  sorted_begin
 ) {
 	// Count the number of occurrences of each value.
 	for (auto it = begin; it != end; it++) {
@@ -57,13 +57,14 @@ void radix_sort(
 	}
 
 	// common buffers for all counting_sort calls
-	using value_type             = typename Iterator::value_type;
+	using value_type = typename Iterator::value_type;
 	std::vector<std::size_t> counts(radix, 0);
-	std::vector<value_type> sorted(std::distance(begin, end));
+	std::vector<value_type>  sorted(std::distance(begin, end));
 
-	// Keep track of the output iterators for counting sort to use double-buffering.
+	// Keep track of the output iterators for counting sort to use
+	// double-buffering.
 	auto sorted_begin = sorted.begin();
-	auto sorted_end = sorted.end();
+	auto sorted_end   = sorted.end();
 
 	// For each digit, sort the elements using counting sort.
 	for (std::size_t i = 1; i <= max_index; i *= radix) {
@@ -80,16 +81,18 @@ void radix_sort(
 			    return (indexer(x) / i) % radix;
 		    },
 		    counts,
-			sorted_begin
+		    sorted_begin
 		);
 
-		// Double-buffering: swap the original array iterators with the sorted array iterators.
-		// This way, the next iteration will sort the sorted array and store the result in the original array and vice versa.
+		// Double-buffering: swap the original array iterators with the sorted
+		// array iterators. This way, the next iteration will sort the sorted
+		// array and store the result in the original array and vice versa.
 		std::swap(begin, sorted_begin);
 		std::swap(end, sorted_end);
 	}
 
-	// If the final array ended up in the sorted buffer, move it back to the original array.
+	// If the final array ended up in the sorted buffer, move it back to the
+	// original array.
 	if (begin == sorted.begin()) {
 		std::move(sorted.begin(), sorted.end(), sorted_begin);
 	}
