@@ -2,6 +2,8 @@
 
 Overpowered Algorithm Library is a collection of algorithms and data structures packaged as a header-only library for easy use with C++ 20 and higher.
 
+**[READ THE PDF](./build/opal.pdf)**
+
 # Important Information
 
 Build artifacts including showcase videos and the detailed description of each algorithm can be found in the [`build`](./build) directory.
